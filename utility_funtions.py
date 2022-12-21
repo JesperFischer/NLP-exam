@@ -10,6 +10,21 @@ from sklearn.feature_extraction.text import CountVectorizer
 from collections import Counter
 import requests
 import seaborn as sns
+from nltk.corpus import stopwords
+import gensim
+from gensim.utils import simple_preprocess
+from gensim.parsing.preprocessing import STOPWORDS
+from nltk.stem import WordNetLemmatizer, SnowballStemmer
+from nltk.stem import PorterStemmer
+from utility_funtions import *
+from nltk.stem.porter import *
+import numpy as np
+import nltk
+from gensim import corpora, models
+nltk.download('wordnet')
+
+
+
 
 def abstracter(n_articles,query,fields = "journal,abstract,title,year",fieldsofstudy = ""):
 
@@ -79,6 +94,7 @@ def cleaner(data, year = None):
 
     
     return(data)
+
 
 
 
@@ -158,3 +174,40 @@ def fitter(abstracts,umap_dim,min_cluster,embed_model = 'all-MiniLM-L6-v2',stopw
 
     topics, probs = topic_model.fit_transform(abstracts)
     return(topics, probs, topic_model)
+
+
+#LDA analysis:
+def lemmatize_stemming(text):
+    lemmatized = WordNetLemmatizer().lemmatize(text, pos='v')
+    return PorterStemmer().stem(lemmatized)
+
+
+def preprocess(text):
+    result = []
+    #gensim does tokenization and makes everything lowercase.
+    for token in gensim.utils.simple_preprocess(text):
+        #want to remove the stopwords and tokens that have fewer than 3 characters
+        if token not in stopwords.words("english") and len(token) > 3:
+            #append the resulting tokens after being lemmatized and stemmed
+            result.append(lemmatize_stemming(token))
+    return result
+
+def get_corpus(text):
+    processed_docs = text.map(preprocess)
+    dictionary = gensim.corpora.Dictionary(processed_docs)
+    bow_corpus = [dictionary.doc2bow(doc) for doc in processed_docs]
+    tfidf = models.TfidfModel(bow_corpus)
+    tfidf_corpus = tfidf[bow_corpus]
+    return(dictionary,bow_corpus,tfidf_corpus)
+
+
+def get_weights(model, corpus):
+    topic_weights = []
+    for row_list in model[corpus]:
+        weight_list = []
+        for i, w in row_list:
+            weight_list.append(w)
+        topic_weights.append(weight_list)
+    arr = pd.DataFrame(topic_weights).fillna(0).values
+    return(arr)
+
