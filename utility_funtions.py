@@ -11,7 +11,6 @@ from collections import Counter
 import requests
 import seaborn as sns
 from nltk.corpus import stopwords
-import gensim
 from gensim.utils import simple_preprocess
 from gensim.parsing.preprocessing import STOPWORDS
 from nltk.stem import WordNetLemmatizer, SnowballStemmer
@@ -21,6 +20,8 @@ from nltk.stem.porter import *
 import numpy as np
 import nltk
 from gensim import corpora, models
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 nltk.download('wordnet')
 
 
@@ -187,7 +188,7 @@ def preprocess(text):
     #gensim does tokenization and makes everything lowercase.
     for token in gensim.utils.simple_preprocess(text):
         #want to remove the stopwords and tokens that have fewer than 3 characters
-        if token not in stopwords.words("english") and len(token) > 3:
+        if token not in stopwords.words("english"):
             #append the resulting tokens after being lemmatized and stemmed
             result.append(lemmatize_stemming(token))
     return result
@@ -211,3 +212,41 @@ def get_weights(model, corpus):
     arr = pd.DataFrame(topic_weights).fillna(0).values
     return(arr)
 
+
+def barchart_lda(lda_model,num_topics):
+    num_topics = num_topics
+    
+    columns = 4
+    rows = int(np.ceil(num_topics / columns))
+    width = 250
+    height = 250
+
+    fig = make_subplots(rows=rows,
+                        cols=columns,
+                        shared_xaxes=False,
+                        horizontal_spacing=.1,
+                        vertical_spacing=.2,
+                        subplot_titles = [f"Topic {topic}" for topic in range(num_topics)])
+
+    row = 1
+    column = 1
+
+    for i in range(num_topics):
+        fig.add_trace(go.Bar(x=[height for _,height in lda_model.show_topic(i)[::-1]],
+                        y = [x for x,_ in lda_model.show_topic(i)[::-1] ],
+                        orientation='h'), row = row, col = column)
+        if column == columns:
+            column = 1
+            row += 1
+        else:
+            column += 1
+
+    fig.update_layout(
+        template="plotly_white",
+        showlegend=False,
+        width=width*4,
+        height=height*rows if rows > 1 else height * 1.3,
+        hoverlabel=dict(
+        bgcolor="white",
+        font_size=16,
+        font_family="Rockwell"))
