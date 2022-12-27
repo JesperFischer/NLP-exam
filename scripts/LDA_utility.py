@@ -1,7 +1,7 @@
 """
 Contains functions for extra cleaning of data as well as fitting and visualizing LDA results.
 """
-from gensim.utils import simple_preprocess
+
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer, WordNetLemmatizer
 from plotly.subplots import make_subplots
