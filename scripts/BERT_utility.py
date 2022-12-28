@@ -218,15 +218,22 @@ def run_bert(data, analysis = "abstracts", save_plot = True, file = "BERT_run", 
 
 
 def run_explorative(data,analysis = "abstracts", save_plot = False, clustersize = 22, random = False):
-    topics, probs, topic_model = run_bert(data, analysis = analysis, save_plot = save_plot, clustersize = clustersize,random = random)
+    topics, probs, topic_model = fitter(data, analysis = analysis, umap_dim = 2, min_cluster = clustersize,random = random)
     
     fig1 = topic_model.visualize_barchart(top_n_topics = 16, n_words = 3)
+    if save_plot == True:
+        if not os.path.exists("BERTopic_Psychedelics"):
+            os.mkdir("BERTopic_Psychedelics")
+        fig1.write_image(os.path.join(os.getcwd(),f"BERTopic_Psychedelics/barchart_analysis={analysis}.png"), engine = "auto")
 
-    if not os.path.exists("BERTopic_Psychedelics"):
-        os.mkdir("BERTopic_Psychedelics")
-    fig1.write_image(os.path.join(os.getcwd(),f"BERTopic_Psychedelics/barchart_analysis={analysis}.png"), engine = "auto")
+        topics_over_time = topic_model.topics_over_time(data[analysis], data["years"])
+        if analysis == "abstracts":
+            fig = topic_model.visualize_topics_over_time(topics_over_time, topics=[0,1,4,5,7,9,12,14])
+            fig.update_layout(font=dict(size=16))
+            fig.write_image(os.path.join(os.getcwd(),f"BERTopic_Psychedelics/topics_overtime_analysis={analysis}.png"), engine = "auto")
+        else:
+            fig = topic_model.visualize_topics_over_time(topics_over_time, topics=[1,2,4,7,11,12])
+            fig.update_layout(font=dict(size=16))
+            fig.write_image(os.path.join(os.getcwd(),f"BERTopic_Psychedelics/topics_overtime_analysis={analysis}.png"), engine = "auto")
 
-    topics_over_time = topic_model.topics_over_time(data["abstracts"], data["years"])
-    fig = topic_model.visualize_topics_over_time(topics_over_time, topics=[0,1,4,5,7,9,12,14])
-    fig.update_layout(font=dict(size=16))
-    fig.write_image(os.path.join(os.getcwd(),f"BERTopic_Psychedelics/topics_overtime_analysis={analysis}.png"), engine = "auto")
+

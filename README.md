@@ -98,6 +98,7 @@ Bertopic_model.visualize_topics_over_time(topics_over_time)
 ![](Readme_figures/Topics_over_time.png)
 
 ## Running other experiments with LDA
+To run topic modeling on the same data using the LDA framework:
 
 ```python 
 fig, lda_model = run_LDA(data, 10, analysis = "abstracts", save_plot = False, bow = 1, alpha = "auto", random = True):
