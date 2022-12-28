@@ -123,10 +123,10 @@ def run_LDA(data, num_topics, analysis = "abstracts", save_plot = True, file = "
          analysis_type = "tf-idf"
 
     #fitting
-    if random != True:
-        random_state=24
+    if random == True:
         lda_model = gensim.models.ldamodel.LdaModel(corpus, num_topics=num_topics, id2word=dictionary, alpha=alpha, eval_every=5,random_state=random_state)
     else:
+        random_state=24
         lda_model = gensim.models.ldamodel.LdaModel(corpus, num_topics=num_topics, id2word=dictionary, alpha=alpha, eval_every=5)
         
    #plotting

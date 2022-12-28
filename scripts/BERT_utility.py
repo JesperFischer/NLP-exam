@@ -126,7 +126,7 @@ def fitter(data, analysis,umap_dim,min_cluster,embed_model = 'all-MiniLM-L6-v2',
         return(topics, probs, topic_model)
     else:
         vectorizer_model = CountVectorizer(stop_words="english")
-
+        
         topic_model = BERTopic(
             umap_model=umap_model,
             hdbscan_model=hdbscan_model,

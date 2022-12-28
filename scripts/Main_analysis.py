@@ -3,14 +3,16 @@ from LDA_utility import *
 from BERT_utility import *
 import argparse
 
-def main(run_appendix):
+def main(appendix):
 
     data1 = pd.read_csv(os.path.join(os.getcwd(),"data","NLP_perception_cardiology.csv"))
     data2 = pd.read_csv(os.path.join(os.getcwd(),"data","Visual_Auditory_Pain_perception.csv"))
     data3 = pd.read_csv(os.path.join(os.getcwd(),"data","Psychedelics.csv"))
     
+    
+
     #run appendix analysis (tf-idf on LDA)?
-    if run_appendix == 1:
+    if appendix == 1:
         run_LDA(data1, num_topics = 3, analysis = "abstracts", save_plot = True, file = "NLP_perception_cardiology", bow = 0, alpha = "auto", random = False)
         run_LDA(data1, num_topics = 3, analysis = "title",save_plot = True, file = "NLP_perception_cardiology", bow = 0, alpha = "auto", random = False)
         #run LDA on second proof-of-concept
@@ -18,7 +20,9 @@ def main(run_appendix):
         run_LDA(data2, num_topics = 3, analysis = "title",save_plot = True, file = "Visual_Auditory_Pain_perception", bow = 0, alpha = "auto", random = False)
 
 
+
     #run LDA on first proof-of-concept
+
     run_LDA(data1, num_topics = 3, analysis = "abstracts", save_plot = True, file = "NLP_perception_cardiology", bow = 1, alpha = "auto", random = False)
     run_LDA(data1, num_topics = 3, analysis = "title",save_plot = True, file = "NLP_perception_cardiology", bow = 1, alpha = "auto", random = False)
     #run LDA on second proof-of-concept
@@ -31,19 +35,20 @@ def main(run_appendix):
     run_bert(data1, analysis = "abstracts", save_plot = True, file = "NLP_perception_cardiology", clustersize = 18,random = False)
     run_bert(data1, analysis = "title", save_plot = True, file = "NLP_perception_cardiology", clustersize = 18,random = False)
     #run BERT on second proof-of-concept
-    run_bert(data2, analysis = "abstracts", save_plot = True, file = "Visual_Auditory_Pain_perception", clustersize = 20,random = False)
-    run_bert(data2, analysis = "title", save_plot = True, file = "Visual_Auditory_Pain_perception", clustersize = cluster_size,random = False)
+    run_bert(data2, analysis = "abstracts", save_plot = True, file = "Visual_Auditory_Pain_perception", clustersize = 22,random = False)
+    run_bert(data2, analysis = "title", save_plot = True, file = "Visual_Auditory_Pain_perception", clustersize = 22,random = False)
     
 
     #run last analysis with BERTopic:
-    run_explorative(data3,analysis = "abstracts", save_plot = True,clustersize = 22, random = False)
+    run_explorative(data3,analysis = "abstracts", save_plot = True, clustersize = 22, random = False)
     run_explorative(data3,analysis = "title", save_plot = True, clustersize = 22, random = False)
     
 
 def parseArguments():
     # Create argument parser
     parser = argparse.ArgumentParser()
-    parser.add_argument('-a','--run_appendix', type = int, default = 1)
+    parser.add_argument('-a','--appendix', type = int, default = 1)
+    
     # Parse arguments
     args = parser.parse_args()
     return args
@@ -51,6 +56,7 @@ def parseArguments():
 
 
 if __name__ == "__main__":
+    args = parseArguments()
     main(
-        run_appendix=args.run_appendix,
+        appendix=args.appendix
         )
