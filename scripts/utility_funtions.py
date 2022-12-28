@@ -4,13 +4,13 @@ Contains functions for loading and cleaning data.
 import time
 import pandas as pd
 import requests
-import random
+
 from nltk.corpus import stopwords
 from typing import List
-import numpy as np
 
 
-def abstracter(n_articles : int, query : str,key : str, fields = "journal,abstract,title,year",fieldsofstudy = "", setseed = False) -> pd.DataFrame:
+
+def abstracter(n_articles : int, query : str,key : str, fields = "journal,abstract,title,year",fieldsofstudy = "") -> pd.DataFrame:
     """loads scientific abstracts and other information from semantic scholar
     Args:
         n_articles (int): number of articles extracted
@@ -21,9 +21,6 @@ def abstracter(n_articles : int, query : str,key : str, fields = "journal,abstra
     Returns:
         Dataframe: A dataframe containing the specified fields.
     """
-    if setseed == True:
-        np.random.seed(42)
-        random.seed(42)
 
     #specify api key:
     headers = {"x-api-key": key}
@@ -91,14 +88,15 @@ def cleaner(data, year = None):
     data["title"] = data["title"].str.lower()
     return(data)
 
-def get_data(queries: List[str],n_articles:int,year : int, key:str, fields = "journal,abstract,title,year", fieldsofstudy = "", setseed = False):
+def get_data(queries: str,n_articles:int,year : int, key:str, fields = "journal,abstract,title,year", fieldsofstudy = ""):
     """wrapper function of cleaning and getting data
     Returns:
         Dataframe: A dataframe containing the specified fields.
     """
+    queries = queries.split(", ")
     data = pd.DataFrame()
     for i in queries:
-        data1 = abstracter(n_articles=n_articles,query = i, key = key, fields=fields, fieldsofstudy = "", setseed = setseed)
+        data1 = abstracter(n_articles=n_articles,query = i, key = key, fields=fields, fieldsofstudy = "")
         data1 = cleaner(data1, year = year)
         data = pd.concat([data,data1])
     return(data)

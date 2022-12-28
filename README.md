@@ -26,18 +26,18 @@ which has to be entered into the key argument in the get_data function.
 
 ### importing data
 importing abstracts or titles are performed by the function "get_data"
-So to extract 1000 abstracts and titles from the year 2000 until today with the keywords:
-Cardiology, Perception and Natural Language Processing. Simply write:
+So to extract 500 abstracts and titles (per search word) from the year 2000 until today with the keywords specified in queries. 
 
 ```python
 from utility_funtions import *
 #insert API-key here:
 key = ""
 
-data = get_data(queries = "Cardiology, Perception, Natural Language Processing",
-                key = key
-                n_articles = 1000,
+data = get_data(queries = "Homeostasis, Perception, Brain, Natural Language Processing, linguistics",
+                key = key,
+                n_articles = 500,
                 year = 2000)
+
 ```
 
 ## Determining hyperparameters for BERTopic
@@ -47,11 +47,11 @@ To make the code reproducible include random = False
 ```python
 from BERT_utility import *
 
-proj = get_umap(data["abstracts"].tolist(), typer = data["type"], random = False)
+proj = get_umap(data, analysis = "abstracts", random = False)
 ```
 
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+![](Readme_figures/UMAP.png)
 
 
 ##
@@ -61,7 +61,7 @@ To determine the cluster size that fits with what one expects after investigatin
 ```python
 from BERT_utility import *
 
-determin_clustersize(proj, cluster_size = [5,10,15,20,25])
+determin_clustersize(proj, cluster_size = [12,13])
 ```
 
 
@@ -73,14 +73,19 @@ To run the whole BERTopic that uses cluster-based term freqency inverse document
 
 
 ```python 
-topic, prob, topic_model = fitter(data["abstracts"].tolist(),umap_dim = 2,min_cluster = 20,embed_model = 'all-MiniLM-L6-v2',stopwords = True,random = False)
+topic, prob, topic_model = fitter(data,
+                                    analysis = "abstracts",
+                                    umap_dim = 2,
+                                    min_cluster = 13,
+                                    stopwords = False,
+                                    random = False)
 ```
 
 ## Visualizing results
 Now to visualize the results as an interactive intertopic distance map, the following code can be run
 
 ```python 
-topic_model.visualize_topics()
+topic_model.visualize_barchart()
 ```
 
 ![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
@@ -93,9 +98,6 @@ topic_model.visualize_topics()
 topics_over_time = topic_model.topics_over_time(data["abstracts"], data["years"])
 topic_model.visualize_topics_over_time(topics_over_time)
 ```
-
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
-
 
 ![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
 

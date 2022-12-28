@@ -15,6 +15,7 @@ import os
 import plotly.graph_objects as go
 import numpy as np
 from plotly.subplots import make_subplots
+from distinctipy import distinctipy
 from typing import List
 import plotly.io as pio
 import random
@@ -24,7 +25,7 @@ nltk.download('stopwords')
 nltk.download('omw-1.4')
 
 
-def get_umap(text, sentencetransformer = 'all-MiniLM-L6-v2', dim = 2, typer = " ", random=True):
+def get_umap(data, analysis, sentencetransformer = 'all-MiniLM-L6-v2', dim = 2, random=True):
     """Uniform Manifold Approximation and Projection demensionality reduction technique, coverts texts / documents to word embeddings and reduces these embeddings to 2 or 3D space and plots them
     Args:
         text (list[str]): text to be embedded and demensionality reduced, in a list format
@@ -41,7 +42,7 @@ def get_umap(text, sentencetransformer = 'all-MiniLM-L6-v2', dim = 2, typer = " 
         umapp = umap.UMAP(n_components=dim, random_state=24)
     model = SentenceTransformer(sentencetransformer)
     #model embeddings and fitting UMAP
-    embeddings = model.encode(text)
+    embeddings = model.encode(data[analysis].tolist())
     proj = umapp.fit_transform(embeddings)
 
     #plotting
@@ -49,12 +50,12 @@ def get_umap(text, sentencetransformer = 'all-MiniLM-L6-v2', dim = 2, typer = " 
         if dim == 3:
             fig = px.scatter_3d(
             proj, x=0, y=1, z=2,
-            color=typer,labels={'color': 'Research area'}
+            color=data["type"],labels={'color': 'Research area'}
             )
         else:
             fig = px.scatter(
                 proj, x=0, y=1,
-                color=typer, labels={'color': 'Research area'}
+                color=data["type"], labels={'color': 'Research area'}
                 )
         fig.update_layout(template="simple_white")
         fig.show()
@@ -69,6 +70,7 @@ def determin_clustersize(proj, cluster_size = [5,10,15,20]):
         Returns:
         Figure of the condensed_treeplot from HDBSCAN to visualise clustering steps from different clustersizes and a colored scatterplot of identified clusters.
     """
+    plt.figure(figsize=(8, 6), dpi=80)
     for cluters in cluster_size:
         cluster = hdbscan.HDBSCAN(min_cluster_size=cluters)
         cluster.fit(proj)   
@@ -77,22 +79,21 @@ def determin_clustersize(proj, cluster_size = [5,10,15,20]):
         plt.title(f"Cluster size {cluters}")
         plt.show()
         try:
-            plot_kwds = {'alpha' : 0.5, 's' : 80, 'linewidths':0}
-            palette = sns.color_palette("hls", 50)
+            palette  = distinctipy.get_colors(35)
+            #first has to be grey (which is the onces the clustering algorithm calls -1)
             random.shuffle(palette)
-            if len(np.unique(np.array(cluster.labels_))) < 50:
-                cluster_colors = [sns.desaturate(palette[col], sat)
-                                if col >= 0 else (0.5, 0.5, 0.5) for col, sat in
-                                zip(cluster.labels_, cluster.probabilities_)]
+            if len(np.unique(np.array(cluster.labels_))) < 35:
+                cluster_colors = [palette[col] for col in cluster.labels_]
                 plt.figure()
-                plt.scatter(proj.T[0], proj.T[1], c=cluster_colors, **plot_kwds)
+                plt.scatter(proj.T[0], proj.T[1], c=cluster_colors)
 
         except:
             print("Try increasing the cluster_size, there are over 50 clusters")
 
 
 
-def fitter(text,umap_dim,min_cluster,embed_model = 'all-MiniLM-L6-v2',stopwords = True,top_n_words=10, random = True):
+
+def fitter(data, analysis,umap_dim,min_cluster,embed_model = 'all-MiniLM-L6-v2',stopwords = True,top_n_words=10, random = True):
     """Function to Fit a BERTopic model with userdefined inputs
     Args:
         text (list[str]): text to be topicmodelled, in a list format
@@ -105,7 +106,7 @@ def fitter(text,umap_dim,min_cluster,embed_model = 'all-MiniLM-L6-v2',stopwords 
         projections of the word embeddings and a scatter plot if dim < 3.
     """
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
-    vectorizer_model = CountVectorizer(stop_words="english")
+    
     if random == True:
         umap_model = umap.UMAP(n_components=umap_dim)
     else:
@@ -121,20 +122,20 @@ def fitter(text,umap_dim,min_cluster,embed_model = 'all-MiniLM-L6-v2',stopwords 
         embedding_model=embed_model,
         top_n_words=top_n_words,
         language = "english")
-
-        topics, probs = topic_model.fit_transform(text)
+        topics, probs = topic_model.fit_transform(data[analysis].tolist())
         return(topics, probs, topic_model)
+    else:
+        vectorizer_model = CountVectorizer(stop_words="english")
 
-    topic_model = BERTopic(
-        umap_model=umap_model,
-        hdbscan_model=hdbscan_model,
-        embedding_model=embed_model,
-        vectorizer_model=vectorizer_model,
-        top_n_words=top_n_words,
-        language = "english")
-
-    topics, probs = topic_model.fit_transform(text)
-    return(topics, probs, topic_model)
+        topic_model = BERTopic(
+            umap_model=umap_model,
+            hdbscan_model=hdbscan_model,
+            embedding_model=embed_model,
+            vectorizer_model=vectorizer_model,
+            top_n_words=top_n_words,
+            language = "english")
+        topics, probs = topic_model.fit_transform(data[analysis].tolist())
+        return(topics, probs, topic_model)
 
 
 

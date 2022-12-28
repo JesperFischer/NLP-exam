@@ -7,8 +7,8 @@ def main(cluster_size, bow):
 
     data1 = pd.read_csv(os.path.join(os.getcwd(),"data","NLP_perception_cardiology.csv"))
     data2 = pd.read_csv(os.path.join(os.getcwd(),"data","Visual_Auditory_Pain_perception.csv"))
+    data3 = pd.read_csv(os.path.join(os.getcwd(),"data","Psychedelics.csv"))
     
-
     #run LDA on first proof-of-concept
 
     run_LDA(data1, num_topics = 3, analysis = "abstracts", save_plot = True, file = "NLP_perception_cardiology", bow = bow, alpha = "auto", random = False)
@@ -36,7 +36,7 @@ def parseArguments():
     # Create argument parser
     parser = argparse.ArgumentParser()
     parser.add_argument('-b','--bow', type = int, default = 1)
-    parser.add_argument("-c", "--cluster_size", type=int, default=20)
+    parser.add_argument("-c", "--cluster_size", type=int, default=18)
     # Parse arguments
     args = parser.parse_args()
     return args
