@@ -217,7 +217,7 @@ def run_bert(data, analysis = "abstracts", save_plot = True, file = "BERT_run", 
     return(topics, probs, topic_model)
 
 
-def run_explorative(data,analysis = "abstracts", save_plot = False, clustersize = 22, random = False):
+def run_explorative(data,analysis = "abstracts", save_plot = True, clustersize = 22, random = False):
     topics, probs, topic_model = fitter(data, analysis = analysis, umap_dim = 2, min_cluster = clustersize,random = random)
     
     fig1 = topic_model.visualize_barchart(top_n_topics = 16, n_words = 3)
