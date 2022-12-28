@@ -21,7 +21,7 @@ import random
 import nltk
 nltk.download('wordnet')
 nltk.download('stopwords')
-
+nltk.download('omw-1.4')
 
 
 def get_umap(text, sentencetransformer = 'all-MiniLM-L6-v2', dim = 2, typer = " ", random=True):
