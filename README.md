@@ -24,7 +24,7 @@ To run other experiments than the one presented in the paper, users have to visi
 which has to be entered into the key argument in the get_data function.
 
 
-### importing data
+## importing data
 importing abstracts or titles are performed by the function "get_data"
 So to extract 500 abstracts and titles (per search word) from the year 2000 until today with the keywords specified in queries. 
 
@@ -54,8 +54,6 @@ proj = get_umap(data, analysis = "abstracts", random = False)
 ![](Readme_figures/UMAP.png)
 
 
-##
-
 To determine the cluster size that fits with what one expects after investigating the above plot simply type:
 
 ```python
@@ -65,12 +63,10 @@ determin_clustersize(proj, cluster_size = [12,13])
 ```
 
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+![](Readme_figures/Condenced_cluster.png)           ![](Readme_figures/Implication_of_condenced_cluster.png)
 
 
 To run the whole BERTopic that uses cluster-based term freqency inverse document freqency (c-tf-idf) simply do: 
-
-
 
 ```python 
 topic, prob, topic_model = fitter(data,
@@ -81,14 +77,14 @@ topic, prob, topic_model = fitter(data,
                                     random = False)
 ```
 
-## Visualizing results
+##E Visualizing results
 Now to visualize the results as an interactive intertopic distance map, the following code can be run
 
 ```python 
 topic_model.visualize_barchart()
 ```
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+![](Readme_figures/Topics.png)
 
 
 ### To get the dynamic topic representation:
@@ -99,5 +95,13 @@ topics_over_time = topic_model.topics_over_time(data["abstracts"], data["years"]
 topic_model.visualize_topics_over_time(topics_over_time)
 ```
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+![](Readme_figures/Topics_over_time.png)
+
+## Running other experiments with LDA
+
+```python 
+fig, lda_model = run_LDA(data, 10, analysis = "abstracts", save_plot = False, bow = 1, alpha = "auto", random = True):
+```
+
+![](Readme_figures/LDA_topics.png)
 

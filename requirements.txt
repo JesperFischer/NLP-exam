@@ -13,4 +13,5 @@ umap==0.1.1
 umap_learn==0.5.3
 kaleido == 0.2.1
 nbformat == 5.1.3 
-
+distinctipy == 1.2.1
+ipykernel == 6.15.0

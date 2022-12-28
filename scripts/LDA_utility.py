@@ -60,7 +60,6 @@ def barchart_lda(lda_model,num_topics, analysis):
         Barchart of top 5 words in each topic
     """
     pio.renderers.default = 'png'
-    num_topics = num_topics
     columns = 3
     rows = int(np.ceil(num_topics / columns))
     width = 250
@@ -70,7 +69,7 @@ def barchart_lda(lda_model,num_topics, analysis):
                         cols=columns,
                         shared_xaxes=False,
                         horizontal_spacing=.2,
-                        vertical_spacing=.4,
+                        vertical_spacing=.2,
                         subplot_titles = [f"Topic {topic}" for topic in range(num_topics)])
 
     row = 1
@@ -92,7 +91,7 @@ def barchart_lda(lda_model,num_topics, analysis):
         showlegend=False,
         width=width*4,
         height=height*rows if rows > 1 else height * 1.3,
-        font=dict(size=24),
+        font=dict(size=18),
         hoverlabel=dict(
         bgcolor="white",
         font_family="Rockwell"))
@@ -115,15 +114,21 @@ def run_LDA(data, num_topics, analysis = "abstracts", save_plot = True, file = "
         Barchart of top 5 words in each topic and the LDA topic model
     """
     dictionary,bow_corpus,tfidf_corpus = get_corpus(data[analysis])
-    #fitting
-    if random != True:
-        np.random.RandomState(24)
+
     if bow == 1:
-        lda_model = gensim.models.ldamodel.LdaModel(bow_corpus, num_topics=num_topics, id2word=dictionary, alpha=alpha, eval_every=5)
+        corpus = bow_corpus
         analysis_type = "bow"
     else:
-        lda_model = gensim.models.ldamodel.LdaModel(tfidf_corpus, num_topics=num_topics, id2word=dictionary, alpha=alpha, eval_every=5)
-        analysis_type = "tf-idf"
+         corpus = tfidf_corpus
+         analysis_type = "tf-idf"
+
+    #fitting
+    if random != True:
+        random_state=24
+        lda_model = gensim.models.ldamodel.LdaModel(corpus, num_topics=num_topics, id2word=dictionary, alpha=alpha, eval_every=5,random_state=random_state)
+    else:
+        lda_model = gensim.models.ldamodel.LdaModel(corpus, num_topics=num_topics, id2word=dictionary, alpha=alpha, eval_every=5)
+        
    #plotting
     fig = barchart_lda(lda_model, num_topics, analysis)
 
