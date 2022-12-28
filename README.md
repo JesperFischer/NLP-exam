@@ -54,34 +54,34 @@ proj = get_umap(data, analysis = "abstracts", random = False)
 ![](Readme_figures/UMAP.png)
 
 
-To determine the cluster size that fits with what one expects after investigating the above plot simply type:
+To determine the cluster size use the function determin_clustersize, which takes a list of cluster_sizes as arguments and plot the resulting clustering.
 
 ```python
 from BERT_utility import *
 
-determin_clustersize(proj, cluster_size = [12,13])
+determin_clustersize(proj, cluster_size = [16])
 ```
 
 
 ![](Readme_figures/Condenced_cluster.png)           ![](Readme_figures/Implication_of_condenced_cluster.png)
 
 
-To run the whole BERTopic that uses cluster-based term freqency inverse document freqency (c-tf-idf) simply do: 
+To run the whole BERTopic that uses combines these steps with cluster-based term freqency inverse document freqency (c tf-idf).
 
 ```python 
-topic, prob, topic_model = fitter(data,
+topic, prob, Bertopic_model = fitter(data,
                                     analysis = "abstracts",
                                     umap_dim = 2,
                                     min_cluster = 13,
-                                    stopwords = False,
+                                    stopwords = True,
                                     random = False)
 ```
 
-##E Visualizing results
+### Visualizing the topics
 Now to visualize the results as an interactive intertopic distance map, the following code can be run
 
 ```python 
-topic_model.visualize_barchart()
+Bertopic_model.visualize_barchart()
 ```
 
 ![](Readme_figures/Topics.png)
@@ -91,8 +91,8 @@ topic_model.visualize_barchart()
 
 ```python 
 
-topics_over_time = topic_model.topics_over_time(data["abstracts"], data["years"])
-topic_model.visualize_topics_over_time(topics_over_time)
+topics_over_time = Bertopic_model.topics_over_time(data["abstracts"], data["years"])
+Bertopic_model.visualize_topics_over_time(topics_over_time)
 ```
 
 ![](Readme_figures/Topics_over_time.png)
@@ -104,4 +104,3 @@ fig, lda_model = run_LDA(data, 10, analysis = "abstracts", save_plot = False, bo
 ```
 
 ![](Readme_figures/LDA_topics.png)
-
