@@ -14,12 +14,14 @@ from nltk.corpus import stopwords
 import os
 import plotly.graph_objects as go
 import numpy as np
-import nltk
 from plotly.subplots import make_subplots
 from typing import List
 import plotly.io as pio
 import random
+import nltk
 nltk.download('wordnet')
+nltk.download('stopwords')
+
 
 
 def get_umap(text, sentencetransformer = 'all-MiniLM-L6-v2', dim = 2, typer = " ", random=True):

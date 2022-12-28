@@ -10,6 +10,10 @@ import os
 import plotly.graph_objects as go
 import plotly.io as pio
 import numpy as np
+import nltk
+nltk.download('wordnet')
+nltk.download('stopwords')
+
 
 
 #LDA analysis:
