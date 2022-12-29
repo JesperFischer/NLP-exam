@@ -14,7 +14,6 @@ nltk.download('wordnet')
 nltk.download('stopwords')
 nltk.download('omw-1.4')
 
-
 #LDA analysis:
 def lemmatize_stemming(text: str):
     """Function to lemmatize and stem a text or string

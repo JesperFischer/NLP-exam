@@ -20,6 +20,7 @@ def abstracter(n_articles : int, query : str,key : str, fields = "journal,abstra
         Dataframe: A dataframe containing the specified fields.
     """
 
+
     #specify api key:
     headers = {"x-api-key": key}
     requests.get("https://api.semanticscholar.org/", headers = headers)

@@ -25,6 +25,7 @@ nltk.download('stopwords')
 nltk.download('omw-1.4')
 
 
+
 def get_umap(data, analysis, sentencetransformer = 'all-MiniLM-L6-v2', dim = 2, random=True):
     """Uniform Manifold Approximation and Projection demensionality reduction technique, coverts texts / documents to word embeddings and reduces these embeddings to 2 or 3D space and plots them
     Args:

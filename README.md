@@ -6,10 +6,6 @@ This is the repo used for the paper,
 For complete reproducibility of the plots and results in the paper
 follow the steps in "Running the code".
 
-
-
-
-
 ## Running the code
 
 To rerun the whole analysis from the paper simply type the following code in the termial:
@@ -78,14 +74,13 @@ topic, prob, Bertopic_model = fitter(data,
 ```
 
 ### Visualizing the topics
-Now to visualize the results as an interactive intertopic distance map, the following code can be run
+Now to visualize the results as a barchart, the following code can be run
 
 ```python 
 Bertopic_model.visualize_barchart()
 ```
 
 ![](Readme_figures/Topics.png)
-
 
 ### To get the dynamic topic representation:
 
@@ -96,6 +91,7 @@ Bertopic_model.visualize_topics_over_time(topics_over_time)
 ```
 
 ![](Readme_figures/Topics_over_time.png)
+
 
 ## Running other experiments with LDA
 To run topic modeling on the same data using the LDA framework:

@@ -26,9 +26,6 @@ def main(appendix):
         run_bert(data2, analysis = "title", file = "Visual_Auditory_Pain_perception", tfidf = 1, clustersize = 15,random = False)
         
 
-
-
-
     #run LDA on first proof-of-concept
 
     run_LDA(data1, num_topics = 3, analysis = "abstracts", save_plot = True, file = "NLP_perception_cardiology", bow = 1, alpha = "auto", random = False)
