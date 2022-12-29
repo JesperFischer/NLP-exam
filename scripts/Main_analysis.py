@@ -40,7 +40,7 @@ def main(appendix):
     
 
     #run last analysis with BERTopic:
-    run_explorative(data3,analysis = "abstracts", save_plot = True, clustersize = 22, random = False)
+    run_explorative(data3,analysis = "abstracts", save_plot = True, clustersize = 11, random = False)
     run_explorative(data3,analysis = "title", save_plot = True, clustersize = 22, random = False)
     
 

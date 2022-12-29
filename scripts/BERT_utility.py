@@ -228,7 +228,7 @@ def run_explorative(data,analysis = "abstracts", save_plot = True, clustersize =
 
         topics_over_time = topic_model.topics_over_time(data[analysis], data["years"])
         if analysis == "abstracts":
-            fig = topic_model.visualize_topics_over_time(topics_over_time, topics=[0,1,4,5,7,9,12,14])
+            fig = topic_model.visualize_topics_over_time(topics_over_time, topics=[0,1,2,5,7,13,15])
             fig.update_layout(font=dict(size=16))
             fig.write_image(os.path.join(os.getcwd(),f"BERTopic_Psychedelics/topics_overtime_analysis={analysis}.png"), engine = "auto")
         else:
