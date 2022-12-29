@@ -4,10 +4,8 @@ Contains functions for loading and cleaning data.
 import time
 import pandas as pd
 import requests
-
 from nltk.corpus import stopwords
 from typing import List
-
 
 
 def abstracter(n_articles : int, query : str,key : str, fields = "journal,abstract,title,year",fieldsofstudy = "") -> pd.DataFrame:
@@ -70,7 +68,7 @@ def abstracter(n_articles : int, query : str,key : str, fields = "journal,abstra
     "type": typer}))
 
 
-def cleaner(data, year = None):
+def cleaner(data : pd.DataFrame, year = None) -> pd.DataFrame:
     """cleans and if year is given filters dataframe from abstracter function
     Returns:
         Dataframe: A dataframe containing the specified fields.
@@ -88,7 +86,7 @@ def cleaner(data, year = None):
     data["title"] = data["title"].str.lower()
     return(data)
 
-def get_data(queries: str,n_articles:int,year : int, key:str, fields = "journal,abstract,title,year", fieldsofstudy = ""):
+def get_data(queries: str,n_articles:int,year : int, key:str, fields = "journal,abstract,title,year", fieldsofstudy = "") -> pd.DataFrame:
     """wrapper function of cleaning and getting data
     Returns:
         Dataframe: A dataframe containing the specified fields.

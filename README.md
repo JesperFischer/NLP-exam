@@ -72,7 +72,7 @@ To run the whole BERTopic that uses combines these steps with cluster-based term
 topic, prob, Bertopic_model = fitter(data,
                                     analysis = "abstracts",
                                     umap_dim = 2,
-                                    min_cluster = 13,
+                                    min_cluster = 16,
                                     stopwords = True,
                                     random = False)
 ```

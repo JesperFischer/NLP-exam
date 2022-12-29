@@ -32,6 +32,7 @@ def get_umap(data, analysis, sentencetransformer = 'all-MiniLM-L6-v2', dim = 2, 
         sentencetransformer (str): The sentencetransformer to be used to make the word embeddings.
         dim (int): number of demensions the embeddings should be reduced to
         typer (str): optional to color the word embeddings in the resulting scatterplot (can be used with typer from abstracter function)
+        random (Logical): should the analysis set a seed?
     Returns:
         projections of the word embeddings and a scatter plot if dim < 3.
     """
@@ -40,6 +41,8 @@ def get_umap(data, analysis, sentencetransformer = 'all-MiniLM-L6-v2', dim = 2, 
         umapp = umap.UMAP(n_components=dim)
     else:
         umapp = umap.UMAP(n_components=dim, random_state=24)
+    #using the sentencetransformer specified, here the "all-MiniLM-L6-v2" is used that transforms the titles or abstracts to a
+    # 384 dimensional dense vector space
     model = SentenceTransformer(sentencetransformer)
     #model embeddings and fitting UMAP
     embeddings = model.encode(data[analysis].tolist())
@@ -50,13 +53,11 @@ def get_umap(data, analysis, sentencetransformer = 'all-MiniLM-L6-v2', dim = 2, 
         if dim == 3:
             fig = px.scatter_3d(
             proj, x=0, y=1, z=2,
-            color=data["type"],labels={'color': 'Research area'}
-            )
+            color=data["type"],labels={'color': 'Research area'})
         else:
             fig = px.scatter(
                 proj, x=0, y=1,
-                color=data["type"], labels={'color': 'Research area'}
-                )
+                color=data["type"], labels={'color': 'Research area'})
         fig.update_layout(template="simple_white")
         fig.show()
 
@@ -78,9 +79,9 @@ def determin_clustersize(proj, cluster_size = [5,10,15,20]):
         cluster.condensed_tree_.plot(select_clusters=True)
         plt.title(f"Cluster size {cluters}")
         plt.show()
+        #plot the UMAP with the identified clusters from HDBSCAN
         try:
             palette  = distinctipy.get_colors(35)
-            #first has to be grey (which is the onces the clustering algorithm calls -1)
             random.shuffle(palette)
             if len(np.unique(np.array(cluster.labels_))) < 35:
                 cluster_colors = [palette[col] for col in cluster.labels_]
@@ -88,7 +89,7 @@ def determin_clustersize(proj, cluster_size = [5,10,15,20]):
                 plt.scatter(proj.T[0], proj.T[1], c=cluster_colors)
 
         except:
-            print("Try increasing the cluster_size, there are over 50 clusters")
+            print("Try increasing the cluster_size, there are over 35 clusters")
 
 
 
@@ -99,14 +100,16 @@ def fitter(data, analysis,umap_dim,min_cluster,embed_model = 'all-MiniLM-L6-v2',
         text (list[str]): text to be topicmodelled, in a list format
         umap_dim (int): number of demensions the word embeddings are reduced to before clustering
         min_cluster(int): cluster_size should be determined by visual inspection from determin_clustersize
-        sentencetransformer (str): The sentencetransformer to be used to make the word embeddings.
-        stopwords (Logical): Should stopwords be removed?
+        embed_model (str): The sentencetransformer to be used to make the word embeddings.
+        tfidf (int) : 0 if running with the sBERT embedding model and 1 to run with tf-idf embedding model
         top_n_words (int): How many words per topic should be returned?
+        random (logical): should a seed be set?
     Returns:
         projections of the word embeddings and a scatter plot if dim < 3.
     """
 
-    
+    #defining the models that goes into BERTopic
+
     if random == True:
         umap_model = umap.UMAP(n_components=umap_dim)
     else:
@@ -120,11 +123,12 @@ def fitter(data, analysis,umap_dim,min_cluster,embed_model = 'all-MiniLM-L6-v2',
     else:
         embed_model = SentenceTransformer(embed_model)
         embeddings = embed_model.encode(data[analysis].tolist())
-        
 
     hdbscan_model = hdbscan.HDBSCAN(min_cluster_size=min_cluster)
     vectorizer_model = CountVectorizer(stop_words="english")
     
+    #initalizing the model:
+
     topic_model = BERTopic(
         umap_model=umap_model,
         hdbscan_model=hdbscan_model,
@@ -132,6 +136,7 @@ def fitter(data, analysis,umap_dim,min_cluster,embed_model = 'all-MiniLM-L6-v2',
         top_n_words=top_n_words,
         language = "english")
 
+    #run the model:
     topics, probs = topic_model.fit_transform(data[analysis].tolist(),embeddings)
     return(topics, probs, topic_model)
 
@@ -149,8 +154,6 @@ def barchart_bert(topic_model,num_topics,analysis):
     freq_df = freq_df.loc[freq_df.Topic != -1, :]
     topics = sorted(freq_df.Topic.to_list()[:num_topics])
     # Initialize figure
-    
-    
     columns = 3
     rows = int(np.ceil(len(topics) / columns))
     fig = make_subplots(rows=rows,
@@ -160,12 +163,13 @@ def barchart_bert(topic_model,num_topics,analysis):
                         vertical_spacing=.4,
                         subplot_titles=[f"Topic {topic}" for topic in topics])
 
-    # Add barchart for each topic
+    #setting dimensions of plots.
     rows = int(np.ceil(num_topics / columns))
     width = 250
     height = 300
     row = 1
     column = 1
+    # Add barchart for each topic
     for topic in topics:
         words = [word + "  " for word, _ in topic_model.get_topic(topic)][:5][::-1]
         scores = [score for _, score in topic_model.get_topic(topic)][:5][::-1]
@@ -197,42 +201,46 @@ def barchart_bert(topic_model,num_topics,analysis):
     return fig
 
 
-def run_bert(data, analysis = "abstracts", save_plot = True, tfidf = 0,file = "BERT_run", clustersize = 15, random = True):
-    """Wrapper function to run the BERTopic analysis 
+def run_bert(data, analysis = "abstracts", tfidf = 0,file = "BERT_run", clustersize = 15, random = True):
+    """Wrapper function to run the BERTopic analysis and save barchart (used for Main_analysis)
         Returns:
-        topics, probabilities of topics and the topic model
+        figures in folders
     """
     
     topics, probs, topic_model = fitter(data, analysis = analysis,umap_dim = 2, tfidf = tfidf, min_cluster = clustersize, random=random)
+    #get barchart
     fig = barchart_bert(topic_model=topic_model, num_topics=3, analysis = analysis)
-
-    if save_plot == True:
-        if not os.path.exists("BERTopic_results"):
-            os.mkdir("BERTopic_results")
-            
-        fig.write_image(os.path.join(os.getcwd(),f"BERTopic_results/{file}_analysis={analysis}_tfidf={tfidf}.png"), engine = "auto")
-        
-    return(topics, probs, topic_model)
+    #save plot
+    if not os.path.exists("BERTopic_results"):
+        os.mkdir("BERTopic_results")
+    fig.write_image(os.path.join(os.getcwd(),f"BERTopic_results/{file}_analysis={analysis}_tfidf={tfidf}.png"), engine = "auto")
+    
 
 
-def run_explorative(data,analysis = "abstracts", save_plot = True, clustersize = 22, random = False):
+def run_explorative(data,analysis = "abstracts", clustersize = 22, random = False):
+    """Wrapper function to run the BERTopic and extract the figures for the Main_analysis save them (used for Main_analysis)
+        Returns:
+        figures in folders
+    """
     topics, probs, topic_model = fitter(data, analysis = analysis, umap_dim = 2, min_cluster = clustersize,random = random)
     
     fig1 = topic_model.visualize_barchart(top_n_topics = 16, n_words = 3)
     fig1.update_layout(font=dict(size=16))
-    if save_plot == True:
-        if not os.path.exists("BERTopic_Psychedelics"):
-            os.mkdir("BERTopic_Psychedelics")
-        fig1.write_image(os.path.join(os.getcwd(),f"BERTopic_Psychedelics/barchart_analysis={analysis}.png"), engine = "auto")
+    #save plots
+    if not os.path.exists("BERTopic_Psychedelics"):
+        os.mkdir("BERTopic_Psychedelics")
+    fig1.write_image(os.path.join(os.getcwd(),f"BERTopic_Psychedelics/barchart_analysis={analysis}.png"), engine = "auto")
 
-        topics_over_time = topic_model.topics_over_time(data[analysis], data["years"])
-        if analysis == "abstracts":
-            fig = topic_model.visualize_topics_over_time(topics_over_time, topics=[0,1,2,5,7,13,15])
-            fig.update_layout(font=dict(size=16))
-            fig.write_image(os.path.join(os.getcwd(),f"BERTopic_Psychedelics/topics_overtime_analysis={analysis}.png"), engine = "auto")
-        else:
-            fig = topic_model.visualize_topics_over_time(topics_over_time, topics=[1,2,4,7,11,12])
-            fig.update_layout(font=dict(size=16))
-            fig.write_image(os.path.join(os.getcwd(),f"BERTopic_Psychedelics/topics_overtime_analysis={analysis}.png"), engine = "auto")
+    #make dynamic topics:
+    
+    topics_over_time = topic_model.topics_over_time(data[analysis], data["years"])
+    if analysis == "abstracts":
+        fig = topic_model.visualize_topics_over_time(topics_over_time, topics=[0,1,2,5,7,13,15])
+        fig.update_layout(font=dict(size=16))
+        fig.write_image(os.path.join(os.getcwd(),f"BERTopic_Psychedelics/topics_overtime_analysis={analysis}.png"), engine = "auto")
+    else:
+        fig = topic_model.visualize_topics_over_time(topics_over_time, topics=[1,2,4,7,11,12])
+        fig.update_layout(font=dict(size=16))
+        fig.write_image(os.path.join(os.getcwd(),f"BERTopic_Psychedelics/topics_overtime_analysis={analysis}.png"), engine = "auto")
 
 
