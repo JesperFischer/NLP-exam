@@ -203,7 +203,7 @@ def run_bert(data, analysis = "abstracts", save_plot = True, tfidf = 0,file = "B
         topics, probabilities of topics and the topic model
     """
     
-    topics, probs, topic_model = fitter(data, analysis = analysis,umap_dim = 2, tfidf = 0, min_cluster = clustersize, random=random)
+    topics, probs, topic_model = fitter(data, analysis = analysis,umap_dim = 2, tfidf = tfidf, min_cluster = clustersize, random=random)
     fig = barchart_bert(topic_model=topic_model, num_topics=3, analysis = analysis)
 
     if save_plot == True:
