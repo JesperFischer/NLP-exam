@@ -105,7 +105,7 @@ def fitter(data, analysis,umap_dim,min_cluster,embed_model = 'all-MiniLM-L6-v2',
     Returns:
         projections of the word embeddings and a scatter plot if dim < 3.
     """
-    os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
     
     if random == True:
         umap_model = umap.UMAP(n_components=umap_dim)
@@ -114,15 +114,15 @@ def fitter(data, analysis,umap_dim,min_cluster,embed_model = 'all-MiniLM-L6-v2',
     
     hdbscan_model = hdbscan.HDBSCAN(min_cluster_size=min_cluster)
     embed_model = SentenceTransformer(embed_model)
+    embeddings = embed_model.encode(data[analysis].tolist())
 
     if stopwords == False:
         topic_model = BERTopic(
         umap_model=umap_model,
         hdbscan_model=hdbscan_model,
-        embedding_model=embed_model,
         top_n_words=top_n_words,
         language = "english")
-        topics, probs = topic_model.fit_transform(data[analysis].tolist())
+        topics, probs = topic_model.fit_transform(data[analysis].tolist(),embeddings)
         return(topics, probs, topic_model)
     else:
         vectorizer_model = CountVectorizer(stop_words="english")
@@ -130,11 +130,11 @@ def fitter(data, analysis,umap_dim,min_cluster,embed_model = 'all-MiniLM-L6-v2',
         topic_model = BERTopic(
             umap_model=umap_model,
             hdbscan_model=hdbscan_model,
-            embedding_model=embed_model,
             vectorizer_model=vectorizer_model,
             top_n_words=top_n_words,
             language = "english")
-        topics, probs = topic_model.fit_transform(data[analysis].tolist())
+
+        topics, probs = topic_model.fit_transform(data[analysis].tolist(),embeddings)
         return(topics, probs, topic_model)
 
 
