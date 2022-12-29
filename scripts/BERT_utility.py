@@ -165,7 +165,7 @@ def barchart_bert(topic_model,num_topics,analysis):
     # Add barchart for each topic
     rows = int(np.ceil(num_topics / columns))
     width = 250
-    height = 250
+    height = 300
     row = 1
     column = 1
     for topic in topics:
@@ -192,7 +192,7 @@ def barchart_bert(topic_model,num_topics,analysis):
         showlegend=False,
         width=width*4,
         height=height*rows if rows > 1 else height * 1.3,
-        font=dict(size=24),
+        font=dict(size=28),
         hoverlabel=dict(
         bgcolor="white",
         font_family="Rockwell"))

@@ -63,13 +63,13 @@ def barchart_lda(lda_model,num_topics, analysis):
     columns = 3
     rows = int(np.ceil(num_topics / columns))
     width = 250
-    height = 250
+    height = 300
 
     fig = make_subplots(rows=rows,
                         cols=columns,
                         shared_xaxes=False,
-                        horizontal_spacing=.2,
-                        vertical_spacing=.2,
+                        horizontal_spacing=.15,
+                        vertical_spacing=.4,
                         subplot_titles = [f"Topic {topic}" for topic in range(num_topics)])
 
     row = 1
@@ -91,7 +91,7 @@ def barchart_lda(lda_model,num_topics, analysis):
         showlegend=False,
         width=width*4,
         height=height*rows if rows > 1 else height * 1.3,
-        font=dict(size=18),
+        font=dict(size=28),
         hoverlabel=dict(
         bgcolor="white",
         font_family="Rockwell"))
