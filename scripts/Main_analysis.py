@@ -19,6 +19,14 @@ def main(appendix):
         run_LDA(data2, num_topics = 3, analysis = "abstracts", save_plot = True, file = "Visual_Auditory_Pain_perception", bow = 0, alpha = "auto", random = False)
         run_LDA(data2, num_topics = 3, analysis = "title",save_plot = True, file = "Visual_Auditory_Pain_perception", bow = 0, alpha = "auto", random = False)
 
+        run_bert(data1, analysis = "abstracts", save_plot = True, file = "NLP_perception_cardiology", tfidf = 1, clustersize = 15,random = False)
+        run_bert(data1, analysis = "title", save_plot = True, file = "NLP_perception_cardiology", tfidf = 1, clustersize = 15,random = False)
+        #run BERT on second proof-of-concept
+        run_bert(data2, analysis = "abstracts", save_plot = True, file = "Visual_Auditory_Pain_perception", tfidf = 1, clustersize = 15,random = False)
+        run_bert(data2, analysis = "title", save_plot = True, file = "Visual_Auditory_Pain_perception", tfidf = 1, clustersize = 15,random = False)
+        
+
+
 
 
     #run LDA on first proof-of-concept
@@ -32,11 +40,11 @@ def main(appendix):
 
 
     #run BERT on first proof-of-concept
-    run_bert(data1, analysis = "abstracts", save_plot = True, file = "NLP_perception_cardiology", clustersize = 18,random = False)
-    run_bert(data1, analysis = "title", save_plot = True, file = "NLP_perception_cardiology", clustersize = 18,random = False)
+    run_bert(data1, analysis = "abstracts", save_plot = True, file = "NLP_perception_cardiology", tfidf = 0, clustersize = 18,random = False)
+    run_bert(data1, analysis = "title", save_plot = True, file = "NLP_perception_cardiology", tfidf = 0, clustersize = 18,random = False)
     #run BERT on second proof-of-concept
-    run_bert(data2, analysis = "abstracts", save_plot = True, file = "Visual_Auditory_Pain_perception", clustersize = 22,random = False)
-    run_bert(data2, analysis = "title", save_plot = True, file = "Visual_Auditory_Pain_perception", clustersize = 22,random = False)
+    run_bert(data2, analysis = "abstracts", save_plot = True, file = "Visual_Auditory_Pain_perception", tfidf = 0, clustersize = 22,random = False)
+    run_bert(data2, analysis = "title", save_plot = True, file = "Visual_Auditory_Pain_perception", tfidf = 0, clustersize = 22,random = False)
     
 
     #run last analysis with BERTopic:

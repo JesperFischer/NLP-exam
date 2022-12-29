@@ -8,7 +8,7 @@ from sentence_transformers import SentenceTransformer
 import matplotlib.pyplot as plt
 import hdbscan
 from bertopic import BERTopic
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 import seaborn as sns
 from nltk.corpus import stopwords
 import os
@@ -93,7 +93,7 @@ def determin_clustersize(proj, cluster_size = [5,10,15,20]):
 
 
 
-def fitter(data, analysis,umap_dim,min_cluster,embed_model = 'all-MiniLM-L6-v2',stopwords = True,top_n_words=10, random = True):
+def fitter(data, analysis,umap_dim,min_cluster,embed_model = 'all-MiniLM-L6-v2',tfidf = 0,top_n_words=10, random = True):
     """Function to Fit a BERTopic model with userdefined inputs
     Args:
         text (list[str]): text to be topicmodelled, in a list format
@@ -112,30 +112,28 @@ def fitter(data, analysis,umap_dim,min_cluster,embed_model = 'all-MiniLM-L6-v2',
     else:
         umap_model = umap.UMAP(n_components=umap_dim, random_state=24)
     
-    hdbscan_model = hdbscan.HDBSCAN(min_cluster_size=min_cluster)
-    embed_model = SentenceTransformer(embed_model)
-    embeddings = embed_model.encode(data[analysis].tolist())
+    
 
-    if stopwords == False:
-        topic_model = BERTopic(
+    if tfidf == 1:
+        vectorizer = TfidfVectorizer()
+        embeddings = vectorizer.fit_transform(data["abstracts"].tolist())
+    else:
+        embed_model = SentenceTransformer(embed_model)
+        embeddings = embed_model.encode(data[analysis].tolist())
+        
+
+    hdbscan_model = hdbscan.HDBSCAN(min_cluster_size=min_cluster)
+    vectorizer_model = CountVectorizer(stop_words="english")
+    
+    topic_model = BERTopic(
         umap_model=umap_model,
         hdbscan_model=hdbscan_model,
+        vectorizer_model=vectorizer_model,
         top_n_words=top_n_words,
         language = "english")
-        topics, probs = topic_model.fit_transform(data[analysis].tolist(),embeddings)
-        return(topics, probs, topic_model)
-    else:
-        vectorizer_model = CountVectorizer(stop_words="english")
-        
-        topic_model = BERTopic(
-            umap_model=umap_model,
-            hdbscan_model=hdbscan_model,
-            vectorizer_model=vectorizer_model,
-            top_n_words=top_n_words,
-            language = "english")
 
-        topics, probs = topic_model.fit_transform(data[analysis].tolist(),embeddings)
-        return(topics, probs, topic_model)
+    topics, probs = topic_model.fit_transform(data[analysis].tolist(),embeddings)
+    return(topics, probs, topic_model)
 
 
 
@@ -199,20 +197,20 @@ def barchart_bert(topic_model,num_topics,analysis):
     return fig
 
 
-def run_bert(data, analysis = "abstracts", save_plot = True, file = "BERT_run", clustersize = 15, random = True):
+def run_bert(data, analysis = "abstracts", save_plot = True, tfidf = 0,file = "BERT_run", clustersize = 15, random = True):
     """Wrapper function to run the BERTopic analysis 
         Returns:
         topics, probabilities of topics and the topic model
     """
     
-    topics, probs, topic_model = fitter(data, analysis = analysis,umap_dim = 2,min_cluster = clustersize, random=random)
+    topics, probs, topic_model = fitter(data, analysis = analysis,umap_dim = 2, tfidf = 0, min_cluster = clustersize, random=random)
     fig = barchart_bert(topic_model=topic_model, num_topics=3, analysis = analysis)
 
     if save_plot == True:
         if not os.path.exists("BERTopic_results"):
             os.mkdir("BERTopic_results")
             
-        fig.write_image(os.path.join(os.getcwd(),f"BERTopic_results/{file}_analysis={analysis}.png"), engine = "auto")
+        fig.write_image(os.path.join(os.getcwd(),f"BERTopic_results/{file}_analysis={analysis}_tfidf={tfidf}.png"), engine = "auto")
         
     return(topics, probs, topic_model)
 
@@ -221,6 +219,7 @@ def run_explorative(data,analysis = "abstracts", save_plot = True, clustersize =
     topics, probs, topic_model = fitter(data, analysis = analysis, umap_dim = 2, min_cluster = clustersize,random = random)
     
     fig1 = topic_model.visualize_barchart(top_n_topics = 16, n_words = 3)
+    fig1.update_layout(font=dict(size=16))
     if save_plot == True:
         if not os.path.exists("BERTopic_Psychedelics"):
             os.mkdir("BERTopic_Psychedelics")
