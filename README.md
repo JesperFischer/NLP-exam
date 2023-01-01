@@ -46,15 +46,24 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
+If you are on a linux system you might need to run these lines before install the requirements:
+```
+sudo apt-get update 
+sudo apt-get install python3-dev
+sudo apt-get install python3-venv 
+```
+
+
+
 Then, you can reproduce the experiments by running:
 
 ```
-python ner/Main_analysis.py
+python scripts/Main_analysis.py
 ```
 
 Finally, if you don't want to run the appendix you can do:
 ```
-python ner/main.py -a 0
+python scripts/Main_analysis.py -a 0
 ```
 
 Run `python ner/main.py --help` for all optional arguments.
