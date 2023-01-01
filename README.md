@@ -6,6 +6,29 @@ This is the repo used for the paper,
 For complete reproducibility of the plots and results in the paper
 follow the steps in "Running the code".
 
+
+
+The organization of the project is as follows:
+
+
+```
+├── README.md                  <- The top-level README for this project.
+├── ReadMe_figures             <- Folder for the figures used in the ReadMe
+|   └── ...
+├── scripts                    <- The main folder for scripts
+|   └── ...
+├── data                       <- The folder with data for repreducable results
+|   └── ...
+├── requirements.txt           <- A requirements file of the required packages.
+└── run.sh                     <- A Bash-script to run the whole analysis in a virtual enviroment
+
+```
+
+
+
+
+
+
 ## Running the code
 
 To rerun the whole analysis from the paper simply type the following code in the termial:
@@ -14,6 +37,28 @@ This code will install all requirements and use the data gathered from semantic 
 ```bash
 bash run.sh
 ```
+
+#
+If you wish to perform these steps manually, and or don't want to run the appendix analysis, then you should first update pip and install the requirements:
+
+```
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+Then, you can reproduce the experiments by running:
+
+```
+python ner/Main_analysis.py
+```
+
+Finally, if you don't want to run the appendix you can do:
+```
+python ner/main.py -a 0
+```
+
+Run `python ner/main.py --help` for all optional arguments.
+
 
 ### Running other experiments
 To run other experiments than the one presented in the paper, users have to visit https://www.semanticscholar.org/ and request an API key
