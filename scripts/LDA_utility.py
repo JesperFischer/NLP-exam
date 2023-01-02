@@ -138,9 +138,9 @@ def run_LDA(data, num_topics : int, analysis = "abstracts", save_plot = True, fi
 
     #fitting
     if random == True:
+        random_state=24
         lda_model = gensim.models.ldamodel.LdaModel(corpus, num_topics=num_topics, id2word=dictionary, alpha=alpha, eval_every=5,random_state=random_state)
     else:
-        random_state=24
         lda_model = gensim.models.ldamodel.LdaModel(corpus, num_topics=num_topics, id2word=dictionary, alpha=alpha, eval_every=5)
         
    #plotting
