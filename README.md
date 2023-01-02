@@ -152,7 +152,7 @@ To run topic modeling on the same data using the LDA framework:
 from scripts.LDA_utility import *
 
 
-fig, lda_model = run_LDA(data, 10, analysis = "abstracts", save_plot = False, bow = 1, alpha = "auto", random = True):
+fig, lda_model = run_LDA(data, 10, analysis = "abstracts", save_plot = False, bow = 1, alpha = "auto", random = True)
 ```
 
 ![](Readme_figures/LDA_topics.png)
