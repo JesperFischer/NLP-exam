@@ -50,7 +50,6 @@ If you are on a linux system you might need to run these lines before install th
 ```
 sudo apt-get update 
 sudo apt-get install python3-dev
-sudo apt-get install python3-venv 
 ```
 
 
@@ -79,7 +78,7 @@ importing abstracts or titles are performed by the function "get_data"
 So to extract 500 abstracts and titles (per search word) from the year 2000 until today with the keywords specified in queries. 
 
 ```python
-from utility_funtions import *
+from scripts.utility_funtions import *
 #insert API-key here:
 key = ""
 
@@ -95,7 +94,7 @@ To find sensible hyperparameters for BERTopic for either abstracts or titles sim
 form UMAP using the following code (this is for abstracts)
 To make the code reproducible include random = False
 ```python
-from BERT_utility import *
+from scripts.BERT_utility import *
 
 proj = get_umap(data, analysis = "abstracts", random = False)
 ```
@@ -107,8 +106,6 @@ proj = get_umap(data, analysis = "abstracts", random = False)
 To determine the cluster size use the function determin_clustersize, which takes a list of cluster_sizes as arguments and plot the resulting clustering.
 
 ```python
-from BERT_utility import *
-
 determin_clustersize(proj, cluster_size = [16])
 ```
 
@@ -123,7 +120,6 @@ topic, prob, Bertopic_model = fitter(data,
                                     analysis = "abstracts",
                                     umap_dim = 2,
                                     min_cluster = 16,
-                                    stopwords = True,
                                     random = False)
 ```
 
@@ -151,6 +147,7 @@ Bertopic_model.visualize_topics_over_time(topics_over_time)
 To run topic modeling on the same data using the LDA framework:
 
 ```python 
+from scripts.LDA_utility import * 
 fig, lda_model = run_LDA(data, 6, analysis = "abstracts", save_plot = False, bow = 1, alpha = "auto", random = True):
 ```
 
