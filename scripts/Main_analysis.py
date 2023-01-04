@@ -7,6 +7,7 @@ def main(appendix):
     """Runs the main analysis of the NLP-exam and reproduces the plots provided in the paper
     Appendix (int): if set to 1 plots and analyses from the appendix is run.
     """
+    #getting the data
     data1 = pd.read_csv(os.path.join(os.getcwd(),"data","NLP_perception_cardiology.csv"))
     data2 = pd.read_csv(os.path.join(os.getcwd(),"data","Visual_Auditory_Pain_perception.csv"))
     data3 = pd.read_csv(os.path.join(os.getcwd(),"data","Psychedelics.csv"))

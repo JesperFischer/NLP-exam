@@ -89,6 +89,12 @@ def cleaner(data : pd.DataFrame, year = None) -> pd.DataFrame:
 
 def get_data(queries: str,n_articles:int,year : int, key:str, fields = "journal,abstract,title,year", fieldsofstudy = "") -> pd.DataFrame:
     """wrapper function of cleaning and getting data
+    Args:
+        n_articles (int): number of articles extracted
+        query (str): Your desired keyword search
+        key (str): API key given from semantic scholar
+        fields (str): information extracted from semantic scholar, see shorturl.at/bsxZ1 for options
+        fieldsofstudy (str): limit search to particular field of study options are found in the link: shorturl.at/bsxZ1
     Returns:
         Dataframe: A dataframe containing the specified fields.
     """

@@ -32,7 +32,6 @@ def get_umap(data, analysis, sentencetransformer = 'all-MiniLM-L6-v2', dim = 2, 
         text (list[str]): text to be embedded and demensionality reduced, in a list format
         sentencetransformer (str): The sentencetransformer to be used to make the word embeddings.
         dim (int): number of demensions the embeddings should be reduced to
-        typer (str): optional to color the word embeddings in the resulting scatterplot (can be used with typer from abstracter function)
         random (Logical): should the analysis set a seed?
     Returns:
         projections of the word embeddings and a scatter plot if dim < 3.
@@ -68,7 +67,7 @@ def get_umap(data, analysis, sentencetransformer = 'all-MiniLM-L6-v2', dim = 2, 
 
 
 def determin_clustersize(proj, cluster_size = [5,10,15,20]):
-    """Clustering algorithm HDBSCAN, takes projections and clusteres them, size of clusters are determined by cluster_size
+    """Clustering algorithm HDBSCAN, takes projections (from get_umap) and clusteres them, size of clusters are determined by cluster_size
         Returns:
         Figure of the condensed_treeplot from HDBSCAN to visualise clustering steps from different clustersizes and a colored scatterplot of identified clusters.
     """
@@ -98,7 +97,8 @@ def determin_clustersize(proj, cluster_size = [5,10,15,20]):
 def fitter(data, analysis,umap_dim,min_cluster,embed_model = 'all-MiniLM-L6-v2',tfidf = 0,top_n_words=10, random = True):
     """Function to Fit a BERTopic model with userdefined inputs
     Args:
-        text (list[str]): text to be topicmodelled, in a list format
+        data (dataframe from (get_data)): data to be topicmodelled
+        analysis (str): either abstract ot title to be analyzed
         umap_dim (int): number of demensions the word embeddings are reduced to before clustering
         min_cluster(int): cluster_size should be determined by visual inspection from determin_clustersize
         embed_model (str): The sentencetransformer to be used to make the word embeddings.
@@ -106,24 +106,25 @@ def fitter(data, analysis,umap_dim,min_cluster,embed_model = 'all-MiniLM-L6-v2',
         top_n_words (int): How many words per topic should be returned?
         random (logical): should a seed be set?
     Returns:
-        projections of the word embeddings and a scatter plot if dim < 3.
+        the topics of the model, the probability of words inside these topics and lastly the topicmodel (BERTopic)
+        which can then be used to visualize the topics in different ways see ReadMe in github.
     """
 
-    #defining the models that goes into BERTopic
-
+    #checking flags
     if random == True:
         umap_model = umap.UMAP(n_components=umap_dim)
     else:
         umap_model = umap.UMAP(n_components=umap_dim, random_state=24)
     
-    
-
     if tfidf == 1:
         vectorizer = TfidfVectorizer()
         embeddings = vectorizer.fit_transform(data["abstracts"].tolist())
     else:
         embed_model = SentenceTransformer(embed_model)
         embeddings = embed_model.encode(data[analysis].tolist())
+
+    #defining the models that goes into BERTopic
+
 
     hdbscan_model = hdbscan.HDBSCAN(min_cluster_size=min_cluster)
     vectorizer_model = CountVectorizer(stop_words="english")
@@ -223,8 +224,10 @@ def run_explorative(data,analysis = "abstracts", clustersize = 22, random = Fals
         Returns:
         figures in folders
     """
+    #run the model
     topics, probs, topic_model = fitter(data, analysis = analysis, umap_dim = 2, min_cluster = clustersize,random = random)
     
+    #get barchart figures:
     fig1 = topic_model.visualize_barchart(top_n_topics = 16, n_words = 3)
     fig1.update_layout(font=dict(size=16))
     #save plots

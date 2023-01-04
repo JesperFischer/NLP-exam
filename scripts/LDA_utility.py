@@ -42,7 +42,7 @@ def preprocess(text: str):
 def get_corpus(text: str):
     """ Wrapper Function that takes the preprocesses the text and returns a dicitionary with a tfidf and Bag of words representation
         Returns:
-        dictionary, bag of words representation and tf-idf representation of the processed text
+        A dictionary of words, bag of words representation and tf-idf representation of the processed text
     """
     #preprocess the data
     processed_docs = text.map(preprocess)
@@ -124,11 +124,12 @@ def run_LDA(data, num_topics : int, analysis = "abstracts", save_plot = True, fi
         alpha (str; numpy_array; list of floats): prior belief of topic distribution in documents, see https://radimrehurek.com/gensim/models/ldamodel.html for options
         random (logical): set a seed True for yes, False for no.
     Returns:
-        Barchart of top 5 words in each topic and the LDA topic model
+        Barchart of top 5 words in each topic and the LDA topic model.
     """
     #getting the courpus function to get dictionary and the word representations.
     dictionary,bow_corpus,tfidf_corpus = get_corpus(data[analysis])
     
+    #checking flags
     if bow == 1:
         corpus = bow_corpus
         analysis_type = "bow"
